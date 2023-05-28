@@ -1,0 +1,26 @@
+import base64
+import boto3
+import json
+
+def lambda_handler(event, context):
+    body = json.loads(event['body'])
+    text = body['text']
+    
+    print(text)
+    
+    polly = boto3.client('polly')
+    
+    response = polly.synthesize_speech(
+        OutputFormat='mp3',
+        Text=text,
+        VoiceId='Joanna'
+    )
+    
+    audio = response['AudioStream'].read()
+    audio_base64 = base64.b64encode(audio)
+    
+    return {
+        'statusCode': 200,
+        'body': audio_base64
+    }
+
